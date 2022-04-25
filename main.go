@@ -4,29 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
 )
 
-// --keyid-format=long --status-fd=1 --verify /tmp/.git_vtag_tmpeub7HI -
-// --status-fd=2 -bsau EAED3DD4
-
-func isVerify() bool {
-	for _, arg := range os.Args {
-		if strings.Index(arg, "verify") >= 0 {
-			return true
-		}
-	}
-
-	return false
-}
-
-var keyfile string
-
 func main() {
-
-	if isVerify() {
+	if len(os.Args) > 1 && os.Args[1] == "verify" {
 		verify()
 	} else {
 		sign()
@@ -61,7 +44,7 @@ func verify() {
 		panic(err)
 	}
 
-	pgpSignature, err := crypto.NewPGPSignatureFromArmored(string(sig))
+	signature, err := crypto.NewPGPSignatureFromArmored(string(sig))
 	if err != nil {
 		panic(err)
 	}
@@ -75,15 +58,15 @@ func verify() {
 
 	keyring := makeKeyring()
 
-	err = keyring.VerifyDetached(message, pgpSignature, crypto.GetUnixTime())
+	err = keyring.VerifyDetached(message, signature, crypto.GetUnixTime())
 	if err != nil {
 		panic(err)
 	}
 
-	// Signature verified. Signed by slofurno 2 minutes ago (2022-04-25 22:04:13 +0000 UTC).
-	//PGP Fingerprint: 250a7a599def57bee405f9236520052ceaed3dd4.
+	key, _ := keyring.GetKey(0)
+	idents := keyring.GetIdentities()
 
-	//fmt.Printf("\n[GNUPG:] VALIDSIG  ")
+	fmt.Fprintf(os.Stderr, "Signature verified. Signed by %s.\nPGP Fingerprint: %s\n", idents[0].Email, key.GetFingerprint())
 }
 
 func sign() {
@@ -103,5 +86,4 @@ func sign() {
 	}
 
 	fmt.Println(s)
-	//fmt.Fprintf(os.Stderr, "\n[GNUPG:] SIG_CREATED ")
 }
