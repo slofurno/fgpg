@@ -55,7 +55,7 @@ func makeKeyring() *crypto.KeyRing {
 }
 
 func verify() {
-	t := os.Args[4]
+	t := os.Args[2]
 	sig, err := ioutil.ReadFile(t)
 	if err != nil {
 		panic(err)
@@ -83,7 +83,7 @@ func verify() {
 	// Signature verified. Signed by slofurno 2 minutes ago (2022-04-25 22:04:13 +0000 UTC).
 	//PGP Fingerprint: 250a7a599def57bee405f9236520052ceaed3dd4.
 
-	fmt.Printf("\n[GNUPG:] VALIDSIG  ")
+	//fmt.Printf("\n[GNUPG:] VALIDSIG  ")
 }
 
 func sign() {
@@ -103,5 +103,5 @@ func sign() {
 	}
 
 	fmt.Println(s)
-	fmt.Fprintf(os.Stderr, "\n[GNUPG:] SIG_CREATED ")
+	//fmt.Fprintf(os.Stderr, "\n[GNUPG:] SIG_CREATED ")
 }
