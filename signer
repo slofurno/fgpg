@@ -1,0 +1,14 @@
+#!/bin/bash
+
+export PGP_PRIVATE_KEY=myprivate.key
+
+case "$@" in
+*verify*)
+  fgpg verify $4
+  printf "\n[GNUPG:] VALIDSIG  "
+  ;;
+*)
+  fgpg
+  printf "\n[GNUPG:] SIG_CREATED " > /dev/fd/2
+  ;;
+esac
